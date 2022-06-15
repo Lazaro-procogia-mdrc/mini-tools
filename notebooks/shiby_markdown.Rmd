@@ -1,0 +1,164 @@
+---
+title: "Interactive Markdown Example"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(palmerpenguins)
+library(plotly)
+library(ggplot2)
+library(shiny)
+```
+
+This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
+
+The following Examples user the very popular `palmerpenguins` dataset.
+
+```{r echo=FALSE}
+knitr::include_graphics("https://allisonhorst.github.io/palmerpenguins/logo.png")
+
+```
+
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Inputs and Outputs
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlotly` function. 
+
+```{r include=FALSE}
+
+data <- penguins
+
+Categorical.Variables = c("species", "island", "sex")
+Numeric.Variables = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g" )
+
+```
+
+
+```{r echo=FALSE}
+inputPanel(
+selectInput("categorical_variable", label = "Select Categorical Variable:", choices = Categorical.Variables),
+
+selectInput("numeric_variable", label = "Select Numeric Variable:", choices = Numeric.Variables)
+
+)
+
+```
+
+```{r echo=FALSE}
+renderPlotly({
+   plot_ly(data,
+              x = ~data[[input$numeric_variable]],
+              color = ~data[[input$categorical_variable]],
+              colors = "Paired",
+              type = "box") %>%
+  layout(title = "",
+         xaxis = list(title = "" ,
+                      zeroline = FALSE))
+})
+```
+
+
+
+## Tabbed Content {.tabset .tabset-fade}
+
+
+Tabbed Content is also an option: in this example you may filter based off the Island(s) the penguins reside in.
+
+```{r echo=FALSE}
+inputPanel(
+selectInput("Island", label = "Select Island:", choices = c("All", as.character(penguins$island)))
+)
+
+```
+
+```{r include=FALSE}
+data_react <- reactive({
+  d <- penguins
+    if(input$Island !="All")
+    d <- subset(d, island == input$Island)
+  d
+})
+
+```
+
+
+### Graph 1 
+
+```{r echo=FALSE}
+renderPlotly(
+  
+ggplotly( ggplot(data_react() , 
+                       aes(x = flipper_length_mm,
+                           y = body_mass_g)) +
+  geom_point(aes(color = species, 
+                 shape = species),
+             size = 3,
+             alpha = 0.8) +
+  scale_color_manual(values = c("darkorange","purple","cyan4")) +
+  labs(title = "Penguin size, Palmer Station LTER",
+       subtitle = "Flipper length and body mass for Adelie, Chinstrap and Gentoo Penguins",
+       x = "Flipper length (mm)",
+       y = "Body mass (g)",
+       color = "Penguin species",
+       shape = "Penguin species") +
+  theme(legend.position = c(0.2, 0.7),
+        plot.title.position = "plot",
+        plot.caption = element_text(hjust = 0, face= "italic"),
+        plot.caption.position = "plot")
+
+))
+```
+
+### Graph 2
+
+```{r echo=FALSE}
+renderPlotly(
+ggplotly(ggplot(data_react(),
+                         aes(x = bill_length_mm,
+                             y = bill_depth_mm,
+                             group = species)) +
+  geom_point(aes(color = species, 
+                 shape = species),
+             size = 3,
+             alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = species)) +
+  scale_color_manual(values = c("darkorange","purple","cyan4")) +
+  labs(title = "Penguin bill dimensions",
+       subtitle = "Bill length and depth for Adelie, Chinstrap and Gentoo Penguins at Palmer Station LTER",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       color = "Penguin species",
+       shape = "Penguin species") +
+  theme(legend.position = c(0.85, 0.15),
+        plot.title.position = "plot",
+        plot.caption = element_text(hjust = 0, face= "italic"),
+        plot.caption.position = "plot")
+  )
+)
+
+```
+
+### Graph 3
+
+```{r echo=FALSE}
+
+renderPlotly(
+  ggplotly(
+ggplot(data_react() , aes(x = body_mass_g)) +
+  geom_histogram(aes(fill = species), 
+                 alpha = 0.5, 
+                 position = "identity") +
+  scale_fill_manual(values = c("darkorange","purple","cyan4")) +
+  labs(x = "Body mass (g)",
+       y = "Frequency",
+       title = "Penguin body mass")
+)
+)
+
+```
+
+
+
