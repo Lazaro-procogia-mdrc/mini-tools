@@ -11,6 +11,8 @@ listofpackages <- c(
 "tidyverse",
 "clustMixType",
 "COUNT",
+"caret",
+"Hmisc",
 "grf",
 "e1071")
 
