@@ -2,6 +2,7 @@
 
 listofpackages <- c(
 "palmerpenguins",
+"tidyverse",
 "plotly",
 "ggplot",
 "shiny",
