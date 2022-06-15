@@ -14,4 +14,4 @@ listofpackages <- c(
 "grf",
 "e1071")
 
-
+install.packages(c(listofpackages))
