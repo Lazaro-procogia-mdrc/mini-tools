@@ -18,7 +18,7 @@ jobs:
         
       - name: Install packages 
         run: |
-          install.packages(c("dplyr"), repos = "https://mran.revolutionanalytics.com/snapshot/2021-11-08")
+          install.packages(c("httr"), repos = "https://packagemanager.rstudio.com/cran/2023-01-30")
         shell: Rscript {0}
       
       - name: Print Package version
