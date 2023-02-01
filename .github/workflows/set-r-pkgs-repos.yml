@@ -1,0 +1,27 @@
+name: set-r-pkgs-repos
+
+on: 
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps: 
+      - uses: actions/checkout@v3
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+         r-version: '4.2.0'
+         use-public-rspm: false
+        
+      - name: Install packages 
+        run: |
+          install.packages(c("dplyr"), repos = "https://mran.revolutionanalytics.com/snapshot/2021-11-08")
+        shell: Rscript {0}
+      
+      - name: Print Package version
+        run: | 
+          packageVersion('dplyr')
+        shell: Rscript {0}
