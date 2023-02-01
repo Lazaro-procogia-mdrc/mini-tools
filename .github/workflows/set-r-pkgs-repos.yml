@@ -23,5 +23,5 @@ jobs:
       
       - name: Print Package version
         run: | 
-          packageVersion('dplyr')
+          packageVersion('httr')
         shell: Rscript {0}
